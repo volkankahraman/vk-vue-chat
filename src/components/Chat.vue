@@ -16,13 +16,21 @@
         ></path>
       </svg>
       <Span> Chat</Span>
+    </div><div class="header-span">a</div>
+    <div class="main">
+      <!-- <Message v-for="message in messages" :content="message" v-bind:key="message" /> -->
+      <Message  />
+      <Message  />
+      <Message  />
+      <Message  />
+      <Message  />
     </div>
-    <div class="main">Main</div>
     <div class="footer">
       <form @submit.prevent="sendMessage">
         <input
           type="text"
           name="message"
+          placeholder="mesaj..."
           id="message"
           v-model="message"
           autocomplete="off"
@@ -49,14 +57,20 @@
 </template>
 
 <script>
+import  Message from "./Message";
 export default {
-  name: "HelloWorld",
-  props: {
-    message: String,
+  name: "Chat",
+  components:{
+    Message,
   },
+  props: ['message'],
+  created: ()=>{
+    this.messages = [];
+  },
+  
   methods: {
     sendMessage: function () {
-      console.log(this.message);
+      this.messages.push(this.message)
     },
   },
 };
@@ -76,12 +90,19 @@ export default {
 }
 
 .header {
-  padding: 15px;
+  padding: 10px;
   background: #181717;
+  position: fixed;
+  top: 0;
+  width: 100vw;
   display: flex;
   flex-direction: row;
   align-items: center;
   color: white;
+}
+.header-span{
+  padding: 15px;
+  display: flex;
 }
 
 .header span {
@@ -92,25 +113,31 @@ export default {
 
 .main {
   padding: 20px;
-  background: violet;
+  background: black;
   flex: 10;
   color: white;
 }
 .footer {
   position: fixed;
-  padding: 20px;
+  padding: 10px;
   bottom: 0;
-  background: darkblue;
+  background: black;
   width: 100vw;
   color: white;
+}
+.footer form {
+    display: flex;
+    align-content: flex-end;
+
 }
 #message {
   background: none;
   border: none;
   border-bottom: 1px solid white;
   color: white;
-  font-size: 5vw;
+  font-size: 4vw;
   width: 80vw;
+  padding: 2px;
 }
 #message:focus {
   outline-width: 0;
@@ -118,5 +145,7 @@ export default {
 button {
   background: none;
   border: none;
+  margin-left: 10px;
+  text-align: center;
 }
 </style>

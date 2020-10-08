@@ -1,14 +1,15 @@
 <template>
-  <HelloWorld />
+  <Chat />
+  <!-- <div>as</div> -->
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import Chat from "./components/Chat.vue";
 
 export default {
-  name: "App",
+  name: "Vk-Chat",
   components: {
-    HelloWorld,
+    Chat,
   },
 };
 </script>
