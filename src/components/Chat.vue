@@ -2,7 +2,6 @@
 
 <template>
   <div class="container">
-    <div id="firebaseui-auth-container" style="position: fixed"></div>
     <div class="header">
       <svg
         class="icon"
@@ -18,9 +17,26 @@
           d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
         />
       </svg>
-      <Span> Chat</Span>
+      <Span> Chat</Span> {{ currUser }}
+      <button @click="logout">
+        <svg
+          class="icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+          ></path>
+        </svg>
+      </button>
     </div>
     <div class="header-span">a</div>
+    <div id="firebaseui-auth-container" v-if="!currUser.id"></div>
     <div
       class="main"
       v-chat-scroll="{
@@ -74,7 +90,7 @@ import Firebase from "firebase/app";
 import "firebase/auth";
 
 // import
-// import * as firebaseui from "firebaseui";
+import * as firebaseui from "firebaseui";
 
 export default {
   name: "Chat",
@@ -88,35 +104,26 @@ export default {
     return {
       message: "",
       messages: [],
-      currUser: {
-        user: "user",
-      },
+      currUser: {},
     };
   },
   mounted: function () {
     Firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        // console.log(this.currUser);
-        // console.log(this.messages);
-
-        this.currUser.type = "anonymous";
+        console.log(user);
         this.currUser.id = user.uid;
       } else {
-        // var ui = new firebaseui.auth.AuthUI(Firebase.auth());
-        // ui.start("#firebaseui-auth-container", {
-        //   signInOptions: [Firebase.auth.EmailAuthProvider.PROVIDER_ID],
-        //   requireDisplayName: false
-        // });
-        Firebase.auth()
-          .signInAnonymously()
-          .catch(function (error) {
-            // Handle Errors here.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            console.log("error");
-            console.log(errorCode, errorMessage);
-            // ...
-          });
+        var ui = new firebaseui.auth.AuthUI(Firebase.auth());
+        Firebase.auth().languageCode = "tr"; // set with string
+        ui.start("#firebaseui-auth-container", {
+          immediateFederatedRedirect: false,
+          signInSuccessUrl: window.location.href,
+          signInOptions: [
+            Firebase.auth.EmailAuthProvider.PROVIDER_ID,
+            firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
+            Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+          ],
+        });
       }
     });
   },
@@ -126,6 +133,11 @@ export default {
       const onlyEmojis = text.replace(new RegExp("[\u0000-\u1eeff]", "g"), "");
       const visibleChars = text.replace(new RegExp("[\n\rs]+|( )+", "g"), "");
       return onlyEmojis.length === visibleChars.length;
+    },
+    logout: function () {
+      Firebase.auth().signOut();
+      this.currUser = {};
+      location.reload();
     },
     sendMessage: function () {
       for (let i = 0; i < this.messages.length; i++) {
@@ -235,6 +247,15 @@ button:focus {
 button:active {
   background: rgba(255, 255, 255, 0.2);
   color: greenyellow !important;
+}
+#firebaseui-auth-container {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 5vh;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 9999999;
+  transition: 0.2 linear;
 }
 @media (min-width: 600px) {
   .icon {
