@@ -1,11 +1,15 @@
+/* eslint-disable */
 import Vue from 'vue';
 import App from './App.vue';
+import VueChatScroll from 'vue-chat-scroll';
+import { firestorePlugin } from 'vuefire';
+
+Vue.use(firestorePlugin);
+
+Vue.use(VueChatScroll);
 
 Vue.config.productionTip = false;
 
 new Vue({
-	render: (h) => h(App),
-	data: {
-		messages: [ { message: 'Foo' }, { message: 'Bar' } ]
-	}
+	render: (h) => h(App)
 }).$mount('#app');
