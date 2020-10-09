@@ -18,12 +18,9 @@
       <Span> Chat</Span>
     </div><div class="header-span">a</div>
     <div class="main">
-      <!-- <Message v-for="message in messages" :content="message" v-bind:key="message" /> -->
-      <Message  />
-      <Message  />
-      <Message  />
-      <Message  />
-      <Message  />
+      
+      <Message v-for="message in messages" :content="message" v-bind:key="message" />
+      
     </div>
     <div class="footer">
       <form @submit.prevent="sendMessage">
@@ -63,14 +60,20 @@ export default {
   components:{
     Message,
   },
-  props: ['message'],
-  created: ()=>{
-    this.messages = [];
+  props:{
+    message: String,
+    messages: Array,
+  }
+,
+  created: function (){
+  this.messages = []
+
   },
   
   methods: {
     sendMessage: function () {
-      this.messages.push(this.message)
+      this.messages.push(this.message);
+      this.message = "";
     },
   },
 };
@@ -101,13 +104,13 @@ export default {
   color: white;
 }
 .header-span{
-  padding: 15px;
+  padding: 20px;
   display: flex;
 }
 
 .header span {
-  padding: 10px;
-  font-size: 5vw;
+  padding: 10px 10px 10px 10px;
+  font-size: 22px;
   font-weight: bold;
 }
 
@@ -135,17 +138,30 @@ export default {
   border: none;
   border-bottom: 1px solid white;
   color: white;
-  font-size: 4vw;
+  font-size: 18px;
   width: 80vw;
   padding: 2px;
 }
 #message:focus {
   outline-width: 0;
+  border-color: greenyellow;
 }
 button {
   background: none;
   border: none;
   margin-left: 10px;
   text-align: center;
+}
+button:focus {
+  outline-width: 0;
+}
+button:hover{
+  background:rgba(255,255,255, 0.2)
+}
+@media (min-width:600px)  { 
+  .icon{
+     width: 4vw;
+  height: 4vw;
+  }
 }
 </style>
