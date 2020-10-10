@@ -48,7 +48,7 @@
       }"
     >
       <Message
-        v-for="message in messages"
+        v-for="message in messages.slice().reverse()"
         :message="message"
         :key="message.id"
       />
@@ -112,7 +112,7 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db.collection("messages").orderBy("createdAt"),
+    messages: db.collection("messages").orderBy("createdAt", "desc").limit(25),
   },
   components: {
     Message,
@@ -170,8 +170,8 @@ export default {
       };
 
       // this.messages.push();
-      db.collection("messages").add(messageSnap);
-      console.log(messageSnap);
+      if (this.message !== "") db.collection("messages").add(messageSnap);
+
       this.message = "";
     },
   },
