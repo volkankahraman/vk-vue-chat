@@ -20,7 +20,7 @@
         </svg>
         <Span> Chat</Span>
       </div>
-      <button @click="logout" v-if="currUser.id" class="logoutBtn">
+      <button @click="logout" class="logoutBtn">
         <svg
           class="icon"
           fill="none"
