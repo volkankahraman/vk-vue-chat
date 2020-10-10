@@ -3,22 +3,24 @@
 <template>
   <div class="container">
     <div class="header">
-      <svg
-        class="icon"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-        />
-      </svg>
-      <Span> Chat</Span> 
-      <button @click="logout">
+      <div class="logo">
+        <svg
+          class="icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+          />
+        </svg>
+        <Span> Chat</Span>
+      </div>
+      <button @click="logout" v-if="currUser.id" class="logoutBtn">
         <svg
           class="icon"
           fill="none"
@@ -54,6 +56,21 @@
     <div class="footer-span">a</div>
     <div class="footer">
       <form @submit.prevent="sendMessage">
+        <button>
+          <svg
+            class="icon"
+            style="width: 5vw; margin-right: 5px"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z"
+              clip-rule="evenodd"
+            ></path>
+          </svg>
+        </button>
         <input
           id="message"
           v-model="message"
@@ -206,7 +223,7 @@ export default {
 }
 .footer {
   position: fixed;
-  padding: 10px;
+  padding: 0px 5px 15px 5px;
   bottom: 0;
   background: black;
   width: 100vw;
@@ -228,6 +245,7 @@ export default {
   font-size: 18px;
   width: 80vw;
   padding: 2px;
+  flex: 1;
 }
 #message:focus {
   outline-width: 0;
@@ -236,7 +254,7 @@ export default {
 button {
   background: none;
   border: none;
-  margin-left: 10px;
+
   text-align: center;
   transition: background, color 0.2s ease;
 }
@@ -256,6 +274,13 @@ button:active {
   background: rgba(0, 0, 0, 0.8);
   z-index: 9999999;
   transition: 0.2 linear;
+}
+.logoutBtn {
+  align-self: center;
+}
+.logo {
+  flex: 1;
+  display: flex;
 }
 @media (min-width: 600px) {
   .icon {
