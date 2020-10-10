@@ -215,7 +215,10 @@ export default {
 
 .main {
   padding: 20px;
-  background: black;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+    url("~@/assets/wolf.jpg");
+  background-position: center;
+  background-size: cover;
   flex: 10;
   color: white;
   overflow-x: hidden;
@@ -281,6 +284,7 @@ button:active {
 .logo {
   flex: 1;
   display: flex;
+  align-items: center;
 }
 @media (min-width: 600px) {
   .icon {

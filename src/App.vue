@@ -20,6 +20,9 @@ export default {
   box-sizing: border-box;
   font-family: roboto, monospace;
 }
+html {
+  background: black;
+}
 
 ::-webkit-scrollbar {
   width: 3px;
