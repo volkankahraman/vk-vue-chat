@@ -226,7 +226,7 @@ export default {
 }
 .footer {
   position: fixed;
-  padding: 0px 5px 15px 5px;
+  padding: 10px 5px 10px 5px;
   bottom: 0;
   background: black;
   width: 100vw;
@@ -274,9 +274,9 @@ button:active {
   width: 100vw;
   height: 100vh;
   padding-top: 5vh;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.94);
   z-index: 9999999;
-  transition: 0.2 linear;
+  transition: all 0, 2 ease;
 }
 .logoutBtn {
   align-self: center;
