@@ -112,7 +112,7 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db.collection("messages").orderBy("createdAt").limit(30),
+    messages: db.collection("messages").orderBy("createdAt"),
   },
   components: {
     Message,
