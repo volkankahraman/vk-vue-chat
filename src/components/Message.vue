@@ -51,8 +51,9 @@ export default {
   flex-direction: column;
 }
 .bouble.user {
-  background: yellowgreen;
-  color: black;
+  background: var(--main-primary);
+
+  color: #eee;
   align-self: flex-end;
 }
 .hasEmoji {

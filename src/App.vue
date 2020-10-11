@@ -23,6 +23,9 @@ export default {
 html {
   background: black;
 }
+:root {
+  --main-primary: #a52422;
+}
 
 ::-webkit-scrollbar {
   width: 3px;
@@ -33,7 +36,7 @@ html {
   height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #89e042;
+  background: var(--main-primary);
   border: 22px none #ffffff;
   border-radius: 50px;
 }

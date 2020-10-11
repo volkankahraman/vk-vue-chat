@@ -8,7 +8,7 @@ module.exports = {
 	},
 	pwa: {
 		name: 'Chat',
-		themeColor: '#42b983',
+		themeColor: '#a52422',
 		msTileColor: '#000',
 		appleMobileWebAppCache: 'yes',
 		manifestOptions: {

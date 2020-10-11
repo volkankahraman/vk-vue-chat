@@ -288,7 +288,7 @@ export default {
 }
 #message:focus {
   outline-width: 0;
-  border-color: greenyellow;
+  border-color: var(--main-primary);
 }
 button {
   background: none;
@@ -302,8 +302,9 @@ button:focus {
 }
 
 button:active {
-  background: rgba(255, 255, 255, 0.2);
-  color: greenyellow !important;
+  background: var(--main-primary);
+  opacity: 0.8;
+  color: var(--main-primary) !important;
 }
 #firebaseui-auth-container {
   position: fixed;

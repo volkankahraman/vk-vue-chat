@@ -18,7 +18,9 @@ Firebase.firestore().settings({
 	cacheSizeBytes: Firebase.firestore.CACHE_SIZE_UNLIMITED
 });
 
-Firebase.firestore().enablePersistence();
+Firebase.firestore().enablePersistence({
+	synchronizeTabs: true
+});
 
 // Export types that exists in Firestore
 // This is not always necessary, but it's used in other examples
@@ -27,7 +29,9 @@ export { Timestamp, GeoPoint };
 
 const messaging = Firebase.messaging();
 messaging
-	.getToken()
+	.getToken({
+		serviceWorkerRegistration: 'chat/service-worker.js'
+	})
 	.then((token) => {
 		console.log(token);
 	})
