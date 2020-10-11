@@ -15,7 +15,7 @@ module.exports = {
 			background_color: '#000'
 		},
 		workboxOptions: {
-			exclude: [ /OneSignal.*\.js$/ ],
+			exclude: [ /firebase.*\.js$/ ],
 			runtimeCaching: [
 				{
 					urlPattern: /^\/$/,
