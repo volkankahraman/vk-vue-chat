@@ -97,6 +97,25 @@
         </button>
       </form>
     </div>
+    <div class="update-dialog" v-if="prompt">
+      <div class="update-dialog__content">
+        A new version is found. Refresh to load it?
+      </div>
+      <div class="update-dialog__actions">
+        <button
+          class="update-dialog__button update-dialog__button--confirm"
+          @click="update"
+        >
+          Update
+        </button>
+        <button
+          class="update-dialog__button update-dialog__button--cancel"
+          @click="prompt = false"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -117,34 +136,51 @@ export default {
   components: {
     Message,
   },
+  created() {
+    if (this.$workbox) {
+      this.$workbox.addEventListener("waiting", () => {
+        this.showUpdateUI = true;
+      });
+    }
+  },
   data: function () {
     return {
       message: "",
       messages: [],
       currUser: {},
+      prompt: false,
     };
   },
   mounted: function () {
-    Firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        console.log(user);
-        this.currUser.id = user.uid;
-      } else {
-        var ui = new firebaseui.auth.AuthUI(Firebase.auth());
-        Firebase.auth().languageCode = "tr"; // set with string
-        ui.start("#firebaseui-auth-container", {
-          immediateFederatedRedirect: false,
-          signInSuccessUrl: window.location.href,
-          signInOptions: [
-            Firebase.auth.EmailAuthProvider.PROVIDER_ID,
-            firebaseui.auth.AnonymousAuthProvider.PROVIDER_ID,
-            Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-          ],
-        });
-      }
-    });
+    var user = Firebase.auth().currentUser;
+    if (user) {
+      console.log(user);
+      this.currUser.id = user.uid;
+    } else {
+      Firebase.auth().onAuthStateChanged((user) => {
+        if (user) {
+          console.log(user);
+          this.currUser.id = user.uid;
+        } else {
+          var ui = new firebaseui.auth.AuthUI(Firebase.auth());
+          Firebase.auth().languageCode = "tr"; // set with string
+          ui.start("#firebaseui-auth-container", {
+            immediateFederatedRedirect: false,
+            signInSuccessUrl: window.location.href,
+            signInOptions: [
+              Firebase.auth.EmailAuthProvider.PROVIDER_ID,
+              Firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            ],
+          });
+        }
+      });
+    }
   },
   methods: {
+    async accept() {
+      this.showUpdateUI = false;
+      await this.$workbox.messageSW({ type: "SKIP_WAITING" });
+    },
     containsOnlyEmojis: function (text) {
       if (text.length === 0) return false;
       const onlyEmojis = text.replace(new RegExp("[\u0000-\u1eeff]", "g"), "");
@@ -276,7 +312,7 @@ button:active {
   padding-top: 5vh;
   background: rgba(0, 0, 0, 0.94);
   z-index: 9999999;
-  transition: all 0, 2 ease;
+  transition: all 0.2s ease;
 }
 .logoutBtn {
   align-self: center;
@@ -285,6 +321,19 @@ button:active {
   flex: 1;
   display: flex;
   align-items: center;
+}
+.update-dialog {
+  position: fixed;
+  left: 50%;
+  bottom: 64px;
+  transform: translateX(-50%);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  padding: 12px;
+  max-width: 576px;
+  color: white;
+  background-color: #2c3e50;
+  text-align: left;
 }
 @media (min-width: 600px) {
   .icon {

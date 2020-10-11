@@ -13,6 +13,12 @@ const firebaseApp = Firebase.initializeApp({
 });
 export const db = firebaseApp.firestore();
 
+Firebase.firestore().settings({
+	cacheSizeBytes: Firebase.firestore.CACHE_SIZE_UNLIMITED
+});
+
+Firebase.firestore().enablePersistence();
+
 // Export types that exists in Firestore
 // This is not always necessary, but it's used in other examples
 const { Timestamp, GeoPoint } = Firebase.firestore;
