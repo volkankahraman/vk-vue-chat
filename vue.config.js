@@ -1,5 +1,5 @@
 module.exports = {
-	publicPath: process.env.NODE_ENV === 'production' ? '/chat' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
 	chainWebpack: (config) => {
 		config.plugin('html').tap((args) => {
 			args[0].title = 'Chat';

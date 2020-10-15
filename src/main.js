@@ -9,6 +9,15 @@ Vue.use(firestorePlugin);
 
 Vue.use(VueChatScroll);
 
+// navigator.serviceWorker
+// 	.register('/firebase-messaging-sw.js')
+// 	.then((registration) => {
+// 		Vue.prototype.$messaging.useServiceWorker(registration);
+// 	})
+// 	.catch((err) => {
+// 		console.log(err);
+// 	});
+
 Vue.config.productionTip = false;
 
 new Vue({

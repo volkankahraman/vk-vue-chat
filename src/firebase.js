@@ -26,3 +26,10 @@ Firebase.firestore().enablePersistence({
 // This is not always necessary, but it's used in other examples
 const { Timestamp, GeoPoint } = Firebase.firestore;
 export { Timestamp, GeoPoint };
+
+Firebase.messaging()
+	.getToken()
+	.then((token) => {
+		console.log(token);
+	})
+	.catch((err) => console.log(err));
