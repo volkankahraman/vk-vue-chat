@@ -1,5 +1,5 @@
 module.exports = {
-	publicPath: process.env.NODE_ENV === 'production' ? '/chat/' : '/',
+	publicPath: process.env.NODE_ENV === 'production' ? '/chat' : '/',
 	chainWebpack: (config) => {
 		config.plugin('html').tap((args) => {
 			args[0].title = 'Chat';
@@ -12,10 +12,12 @@ module.exports = {
 		msTileColor: '#000',
 		appleMobileWebAppCache: 'yes',
 		manifestOptions: {
-			background_color: '#000'
+			background_color: '#000',
+			gcm_sender_id: '571399924691',
+			name: 'Chat'
 		},
 		workboxOptions: {
-			exclude: [ /firebase.*\.js$/ ],
+			exclude: [ /firebase.*\.js$/, /map/ ],
 			runtimeCaching: [
 				{
 					urlPattern: /^\/$/,

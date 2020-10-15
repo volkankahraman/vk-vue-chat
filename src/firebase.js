@@ -26,17 +26,3 @@ Firebase.firestore().enablePersistence({
 // This is not always necessary, but it's used in other examples
 const { Timestamp, GeoPoint } = Firebase.firestore;
 export { Timestamp, GeoPoint };
-
-const messaging = Firebase.messaging();
-messaging
-	.getToken({
-		serviceWorkerRegistration: 'chat/service-worker.js'
-	})
-	.then((token) => {
-		console.log(token);
-	})
-	.catch((err) => console.log(err));
-
-messaging.onMessage((payload) => {
-	console.log('Message received. ', payload);
-});
