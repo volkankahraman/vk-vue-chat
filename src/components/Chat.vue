@@ -18,7 +18,7 @@
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
           />
         </svg>
-        <Span> Chat v2</Span>
+        <Span> Chat v3</Span>
       </div>
       <button @click="logout" class="logoutBtn">
         <svg
@@ -158,23 +158,25 @@ export default {
       console.log(user);
       this.currUser.id = user.uid;
       Firebase.messaging()
-	.getToken()
-	.then((token) => {
-		console.log(token);
-	})
-	.catch((err) => console.log('error',err));
-
+        .getToken()
+        .then((token) => {
+          console.log(token);
+          alert(token);
+        })
+        .catch((err) => console.log("error", err));
     } else {
       Firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           console.log(user);
+
           this.currUser.id = user.uid;
           Firebase.messaging()
-	.getToken()
-	.then((token) => {
-		console.log(token);
-	})
-	.catch((err) => console.log('error',err));
+            .getToken()
+            .then((token) => {
+              console.log(token);
+              alert(token);
+            })
+            .catch((err) => console.log("error", err));
         } else {
           var ui = new firebaseui.auth.AuthUI(Firebase.auth());
           Firebase.auth().languageCode = "tr"; // set with string
