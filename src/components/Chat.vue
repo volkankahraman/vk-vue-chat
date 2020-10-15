@@ -124,6 +124,7 @@ import Message from "./Message";
 import { db } from "../firebase";
 import Firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/messaging";
 
 // import
 import * as firebaseui from "firebaseui";
@@ -156,11 +157,24 @@ export default {
     if (user) {
       console.log(user);
       this.currUser.id = user.uid;
+      Firebase.messaging()
+	.getToken()
+	.then((token) => {
+		console.log(token);
+	})
+	.catch((err) => console.log('error',err));
+
     } else {
       Firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           console.log(user);
           this.currUser.id = user.uid;
+          Firebase.messaging()
+	.getToken()
+	.then((token) => {
+		console.log(token);
+	})
+	.catch((err) => console.log('error',err));
         } else {
           var ui = new firebaseui.auth.AuthUI(Firebase.auth());
           Firebase.auth().languageCode = "tr"; // set with string
