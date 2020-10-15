@@ -12,6 +12,4 @@ if (!firebase.apps.length) {
 }
 let messaging = firebase.messaging();
 
-messaging.onMessage((message) => {
-	console.log(message);
-});
+

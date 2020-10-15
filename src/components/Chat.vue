@@ -132,7 +132,10 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db.collection("messages").orderBy("createdAt", "desc").limit(25),
+    messages: db
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .limit(25),
   },
   components: {
     Message,
@@ -144,7 +147,7 @@ export default {
       });
     }
   },
-  data: function () {
+  data: function() {
     return {
       message: "",
       messages: [],
@@ -152,31 +155,19 @@ export default {
       prompt: false,
     };
   },
-  mounted: function () {
+  mounted: function() {
     var user = Firebase.auth().currentUser;
     if (user) {
       console.log(user);
       this.currUser.id = user.uid;
-      Firebase.messaging()
-        .getToken()
-        .then((token) => {
-          console.log(token);
-          alert(token);
-        })
-        .catch((err) => console.log("error", err));
+      this.getToken();
     } else {
       Firebase.auth().onAuthStateChanged((user) => {
         if (user) {
           console.log(user);
 
           this.currUser.id = user.uid;
-          Firebase.messaging()
-            .getToken()
-            .then((token) => {
-              console.log(token);
-              alert(token);
-            })
-            .catch((err) => console.log("error", err));
+          this.getToken();
         } else {
           var ui = new firebaseui.auth.AuthUI(Firebase.auth());
           Firebase.auth().languageCode = "tr"; // set with string
@@ -193,22 +184,44 @@ export default {
     }
   },
   methods: {
+    getToken() {
+      Firebase.messaging()
+        .getToken()
+        .then((token)=>{
+          console.log(token);
+          db.collection("tokens")
+            .get()
+            .then((querySnapshot) =>{
+              let exist = false;
+              querySnapshot.forEach(function(doc) {
+                if (token === doc.data().token) exist = true;
+              });
+              if(!exist)
+              db.collection('tokens').add({
+                token: token,
+                userID: this.currUser.id
+              })
+              console.log(exist);
+            });
+        })
+        .catch((err) => console.log("error", err));
+    },
     async accept() {
       this.showUpdateUI = false;
       await this.$workbox.messageSW({ type: "SKIP_WAITING" });
     },
-    containsOnlyEmojis: function (text) {
+    containsOnlyEmojis: function(text) {
       if (text.length === 0) return false;
       const onlyEmojis = text.replace(new RegExp("[\u0000-\u1eeff]", "g"), "");
       const visibleChars = text.replace(new RegExp("[\n\rs]+|( )+", "g"), "");
       return onlyEmojis.length === visibleChars.length;
     },
-    logout: function () {
+    logout: function() {
       Firebase.auth().signOut();
       this.currUser = {};
       location.reload();
     },
-    sendMessage: function () {
+    sendMessage: function() {
       for (let i = 0; i < this.messages.length; i++) {
         this.messages[i].seen = false;
       }
