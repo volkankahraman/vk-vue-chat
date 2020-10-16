@@ -18,7 +18,7 @@
             d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
           />
         </svg>
-        <Span> Chat v3</Span>
+        <Span> Chat</Span>
       </div>
       <button @click="logout" class="logoutBtn">
         <svg
@@ -38,7 +38,7 @@
       </button>
     </div>
     <div class="header-span">a</div>
-    <div id="firebaseui-auth-container" v-if="!currUser.id"></div>
+    <div id="firebaseui-auth-container" v-if="false"></div>
     <div
       class="main"
       v-chat-scroll="{
@@ -52,11 +52,21 @@
         :message="message"
         :key="message.id"
       />
+
+      <div :class="{ 'not-writing': true }">Karşı taraf yazıyor...</div>
     </div>
     <div class="footer-span">a</div>
     <div class="footer">
       <form @submit.prevent="sendMessage">
+        <!-- v-touch:start="startRecording" v-touch:end="endRecording" -->
         <button>
+          <input
+            type="file"
+            @change="previewSound"
+            id="sound"
+            accept="audio/*"
+            capture
+          />
           <svg
             class="icon"
             style="width: 5vw; margin-right: 5px"
@@ -123,8 +133,11 @@
 import Message from "./Message";
 import { db } from "../firebase";
 import Firebase from "firebase/app";
+import Swal from "sweetalert2";
+
 import "firebase/auth";
 import "firebase/messaging";
+import "firebase/storage";
 
 // import
 import * as firebaseui from "firebaseui";
@@ -132,10 +145,7 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db
-      .collection("messages")
-      .orderBy("createdAt", "desc")
-      .limit(25),
+    messages: db.collection("messages").orderBy("createdAt", "desc").limit(25),
   },
   components: {
     Message,
@@ -147,7 +157,7 @@ export default {
       });
     }
   },
-  data: function() {
+  data: function () {
     return {
       message: "",
       messages: [],
@@ -155,7 +165,7 @@ export default {
       prompt: false,
     };
   },
-  mounted: function() {
+  mounted: function () {
     var user = Firebase.auth().currentUser;
     if (user) {
       console.log(user);
@@ -184,23 +194,71 @@ export default {
     }
   },
   methods: {
+    previewSound() {
+      let inputElement = document.getElementById("sound");
+      console.dir(inputElement.files[0]);
+
+      // soundElement.src = window.URL.createObjectURL(inputElement.files[0]);
+      Firebase.storage()
+        .ref(inputElement.files[0].name)
+        .put(inputElement.files[0])
+        .then((snapshot) => {
+          snapshot.ref.getDownloadURL().then((url) => {
+            let messageSnap = {
+              seen: false,
+              emoji: this.containsOnlyEmojis(this.message),
+              user: this.currUser.id,
+              content: "Ses kaydı gönderdi!",
+              soundUrl: url,
+              createdAt: Date.now(),
+            };
+
+            db.collection("messages").add(messageSnap);
+            Swal.fire({
+              text: "gayıtlandı !",
+              timer: 900,
+              icon: "success",
+              showConfirmButton: false,
+            });
+          });
+        });
+
+      // ref.on("state_changed", (snapshot) => {
+      //   snapshot.ref.getDownloadURL().then((url) => {
+      //     console.log(url);
+      //     soundElement.src = url;
+      //     Swal.fire({
+      //       text: "gayıtlandı !" + url,
+      //       timer: 300,
+      //     });
+      //   });
+      // });
+    },
+    startRecording() {
+      console.log("a");
+
+      // const player = document.getElementById("player");
+    },
+    endRecording() {
+      console.log("b");
+    },
     getToken() {
       Firebase.messaging()
         .getToken()
-        .then((token)=>{
+        .then((token) => {
           console.log(token);
           db.collection("tokens")
             .get()
-            .then((querySnapshot) =>{
+            .then((querySnapshot) => {
               let exist = false;
-              querySnapshot.forEach(function(doc) {
+              querySnapshot.forEach(function (doc) {
                 if (token === doc.data().token) exist = true;
               });
-              if(!exist)
-              db.collection('tokens').add({
-                token: token,
-                userID: this.currUser.id
-              })
+              if (!exist)
+                db.collection("tokens").add({
+                  token: token,
+                  userID: this.currUser.id,
+                });
               console.log(exist);
             });
         })
@@ -210,18 +268,18 @@ export default {
       this.showUpdateUI = false;
       await this.$workbox.messageSW({ type: "SKIP_WAITING" });
     },
-    containsOnlyEmojis: function(text) {
+    containsOnlyEmojis(text) {
       if (text.length === 0) return false;
       const onlyEmojis = text.replace(new RegExp("[\u0000-\u1eeff]", "g"), "");
       const visibleChars = text.replace(new RegExp("[\n\rs]+|( )+", "g"), "");
       return onlyEmojis.length === visibleChars.length;
     },
-    logout: function() {
+    logout() {
       Firebase.auth().signOut();
       this.currUser = {};
       location.reload();
     },
-    sendMessage: function() {
+    sendMessage() {
       for (let i = 0; i < this.messages.length; i++) {
         this.messages[i].seen = false;
       }
@@ -244,6 +302,29 @@ export default {
 </script>
 
 <style scoped>
+audio::-webkit-media-controls-mute-button,
+audio::-webkit-media-controls-time-remaining-display,
+audio::-webkit-media-controls-volume-slider,
+audio::-webkit-media-controls-volume-slider-container {
+  display: none;
+}
+#player {
+  height: 40px;
+
+  margin: 10px 0px 10px 0px;
+}
+.player-container {
+  position: relative;
+  top: 10px;
+  width: 220px;
+  overflow: hidden;
+  border-radius: 0.7em;
+  /* border-top-right-radius: 0.5em 0.5em;
+  border-bottom-right-radius: 1em 0.7em; */
+}
+.player-container ~ .owner {
+  align-self: right;
+}
 .icon {
   width: 8vw;
   height: 8vw;
@@ -342,6 +423,7 @@ button:active {
   padding-top: 5vh;
   background: rgba(0, 0, 0, 0.94);
   z-index: 9999999;
+  left: 0;
   transition: all 0.2s ease;
 }
 .logoutBtn {
@@ -365,7 +447,20 @@ button:active {
   background-color: #2c3e50;
   text-align: left;
 }
+.not-writing {
+  display: none;
+}
+#sound {
+  opacity: 0;
+  position: absolute;
+  height: 100px;
+  top: 5px;
+  width: 8vw;
+}
 @media (min-width: 600px) {
+  #sound {
+    width: 4vw;
+  }
   .icon {
     width: 4vw;
     height: 4vw;
