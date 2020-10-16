@@ -38,7 +38,7 @@
       </button>
     </div>
     <div class="header-span">a</div>
-    <div id="firebaseui-auth-container" v-if="false"></div>
+    <div id="firebaseui-auth-container" v-if="!currUser.id"></div>
     <div
       class="main"
       v-chat-scroll="{
