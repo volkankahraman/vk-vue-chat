@@ -2,6 +2,7 @@
 
 <template>
   <div class="container">
+    <div class="backDrop" v-if="dotMenuShow" @click="dotMenuShow = false"></div>
     <div class="header">
       <div class="logo">
         <svg
@@ -20,7 +21,8 @@
         </svg>
         <Span> Chat</Span>
       </div>
-      <button @click="logout" class="logoutBtn">
+
+      <button @click="dotMenuShow = true">
         <svg
           class="icon"
           fill="none"
@@ -32,10 +34,50 @@
             stroke-linecap="round"
             stroke-linejoin="round"
             stroke-width="2"
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
           ></path>
         </svg>
       </button>
+      <transition name="slide" duration="200">
+        <ul class="dot-menu" v-show="dotMenuShow">
+          <li>
+            <svg
+              class="icon"
+              style="color: var(--text-color); width: 5vw"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path>
+            </svg>
+            <div style="padding-left: 15px">Hakkında</div>
+          </li>
+          <li @click="logout">
+            <svg
+              class="icon"
+              style="color: var(--text-color); width: 5vw"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              ></path>
+            </svg>
+            <div style="padding-left: 15px">Çıkış Yap</div>
+          </li>
+        </ul>
+      </transition>
     </div>
     <div class="header-span">a</div>
     <div id="firebaseui-auth-container" v-if="!currUser.id"></div>
@@ -47,12 +89,13 @@
         scrollonremoved: true,
       }"
     >
-      <Message
-        v-for="message in messages.slice().reverse()"
-        :message="message"
-        :key="message.id"
-      />
-
+      <transition-group name="list" tag="div">
+        <Message
+          v-for="message in messages.slice().reverse()"
+          :message="message"
+          :key="message.id"
+        />
+      </transition-group>
       <div :class="{ 'not-writing': true }">Karşı taraf yazıyor...</div>
     </div>
     <div class="footer-span">a</div>
@@ -81,14 +124,56 @@
             ></path>
           </svg>
         </button>
-        <input
+        <textarea
           id="message"
           v-model="message"
+          @focus="inputIconShow = false"
+          @blur="inputIconShow = true"
           type="text"
           name="message"
           placeholder="mesaj..."
           autocomplete="off"
         />
+        <transition name="bounce" duration="600">
+          <div class="icon-group" v-show="inputIconShow && !message">
+            <svg
+              class="icon input-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <svg
+              class="icon input-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+            <svg
+              class="icon input-icon"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                clip-rule="evenodd"
+                d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-5L9 4H4zm7 5a1 1 0 00-2 0v1H8a1 1 0 000 2h1v1a1 1 0 002 0v-1h1a1 1 0 000-2h-1V9z"
+                fill-rule="evenodd"
+              ></path>
+            </svg>
+          </div>
+        </transition>
         <button>
           <svg
             class="icon"
@@ -138,6 +223,7 @@ import Swal from "sweetalert2";
 import "firebase/auth";
 import "firebase/messaging";
 import "firebase/storage";
+require("vue2-animate/dist/vue2-animate.min.css");
 
 // import
 import * as firebaseui from "firebaseui";
@@ -157,12 +243,15 @@ export default {
       });
     }
   },
+
   data: function () {
     return {
       message: "",
       messages: [],
       currUser: {},
       prompt: false,
+      inputIconShow: true,
+      dotMenuShow: false,
     };
   },
   mounted: function () {
@@ -302,6 +391,61 @@ export default {
 </script>
 
 <style scoped>
+.backDrop {
+  width: 100vw;
+  height: 100vh;
+  background: none;
+  position: fixed;
+  z-index: 1;
+}
+.slide-leave-active,
+.slide-enter-active {
+  transition: 200ms;
+}
+.slide-enter {
+  transform: translateY(-70%);
+  opacity: 0;
+}
+.slide-leave-to {
+  transform: translateY(-70%);
+  opacity: 0;
+}
+.dot-menu {
+  padding: 10px;
+  margin: 5px;
+  position: absolute;
+  right: 15px;
+  top: 0;
+  z-index: 2;
+  background: var(--secondary-color);
+  color: var(--text-color);
+  box-sizing: border-box;
+  -webkit-box-shadow: 5px 9px 21px -9px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 5px 9px 21px -9px rgba(0, 0, 0, 0.75);
+  box-shadow: 5px 9px 21px -9px rgba(0, 0, 0, 0.75);
+}
+.dot-menu li {
+  padding: 15px 25px 15px 10px;
+  list-style: none;
+  cursor: pointer;
+  align-items: center;
+  display: flex;
+}
+.dot-menu li:hover,
+.dot-menu li:active {
+  background: var(--hover-color);
+}
+
+.list-enter-active,
+.list-leave-active {
+  transition: all 0.4s ease;
+}
+
+.list-enter-from,
+.list-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
 audio::-webkit-media-controls-mute-button,
 audio::-webkit-media-controls-time-remaining-display,
 audio::-webkit-media-controls-volume-slider,
@@ -330,6 +474,15 @@ audio::-webkit-media-controls-volume-slider-container {
   height: 8vw;
   color: white;
 }
+.icon-group {
+  position: absolute;
+  right: 13vw;
+}
+.input-icon {
+  width: 7vw;
+  height: 7vw;
+  color: #909090;
+}
 .container {
   display: flex;
   flex-direction: column;
@@ -339,10 +492,11 @@ audio::-webkit-media-controls-volume-slider-container {
 
 .header {
   padding: 10px;
-  background: #181717;
+  background: var(--secondary-color);
   position: fixed;
   top: 0;
   width: 100vw;
+  z-index: 2;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -369,6 +523,7 @@ audio::-webkit-media-controls-volume-slider-container {
   color: white;
   overflow-x: hidden;
   overflow-y: auto;
+  padding-bottom: 35px;
 }
 .footer {
   position: fixed;
@@ -395,6 +550,7 @@ audio::-webkit-media-controls-volume-slider-container {
   width: 80vw;
   padding: 2px;
   flex: 1;
+  resize: none;
 }
 #message:focus {
   outline-width: 0;
@@ -462,8 +618,8 @@ button:active {
     width: 4vw;
   }
   .icon {
-    width: 4vw;
-    height: 4vw;
+    width: 2vw;
+    height: 2vw;
   }
   .container {
     width: 80vw;
@@ -474,6 +630,9 @@ button:active {
   }
   .footer {
     width: 80vw;
+  }
+  .icon-group {
+    right: 3.5vw;
   }
 }
 </style>

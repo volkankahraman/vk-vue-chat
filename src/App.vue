@@ -21,17 +21,25 @@ export default {
   font-family: roboto, monospace;
 }
 html {
-  background: black;
+  background: rgb(255, 0, 0);
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 0, 1) 40%,
+    rgba(2, 0, 36, 1) 100%
+  );
 }
 .disable-selection {
-     -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* Internet Explorer */
-   -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer */
+  -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
   -webkit-user-select: none; /* Chrome, Safari, and Opera */
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
 :root {
   --main-primary: #a52422;
+  --text-color: white;
+  --secondary-color: #181717;
+  --hover-color: #242424;
 }
 
 ::-webkit-scrollbar {

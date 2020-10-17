@@ -19,6 +19,7 @@
     "sweetalert2": "^10.6.0",
     "vue": "^2.6.11",
     "vue-chat-scroll": "^1.4.0",
+    "vue2-animate": "^2.1.4",
     "vue2-touch-events": "^2.3.2",
     "vuefire": "^2.2.4"
   },

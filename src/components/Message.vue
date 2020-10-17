@@ -23,6 +23,7 @@ import "firebase/auth";
 import { db } from "../firebase";
 import Swal from "sweetalert2";
 
+// import "gsap";
 export default {
   props: {
     message: {
@@ -56,6 +57,7 @@ export default {
     //   event.stopPropagation();
     //   return false;
     // };
+
     Firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         if (user.uid === this.message.user) {
@@ -82,6 +84,7 @@ export default {
   align-self: flex-start;
   max-width: 60vw;
   box-sizing: border-box;
+  /* animation: all 1s linear; */
 }
 .sound-bouble {
   background: none !important;
