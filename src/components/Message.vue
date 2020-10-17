@@ -11,7 +11,7 @@
     </div>
     <div class="sound-bouble" :class="{ user: owner }" v-if="message.soundUrl">
       <audio id="player" controls :src="message.soundUrl"></audio>
-      <button @click="onMessageTap">X</button>
+      <button @click="onMessageTap" class="deleteSound">X</button>
     </div>
     <span class="seen" :class="{ 'seen-hide': !message.seen }">Görüldü</span>
   </div>
@@ -36,7 +36,7 @@ export default {
       if (this.owner)
         Swal.fire({
           text: `Mesaj: ${this.message.content}`,
-          confirmButtonColor: "#a52422",
+          confirmButtonColor: "var(--primary-color)",
           confirmButtonText: "Sil",
         }).then((result) => {
           if (result.value) {
@@ -75,8 +75,11 @@ export default {
 </script>
 
 <style>
+.deleteSound{
+  border-radius: 50%;
+}
 .bouble {
-  color: white;
+  color: var(--text-color);
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.15);
   padding: 10px 15px 10px 15px;
@@ -99,9 +102,9 @@ export default {
   flex-direction: column;
 }
 .user {
-  background: var(--main-primary);
+  background: var(--primary-color);
 
-  color: #eee;
+  color: var(--text-color);
   align-self: flex-end;
 }
 .hasEmoji {
@@ -119,17 +122,17 @@ export default {
   display: none;
 }
 .swal2-popup {
-  background-color: #181717 !important;
+  background-color: var(--secondary-color) !important;
 }
 #swal2-title {
-  color: white;
+  color: var(--text-color);
 }
 #swal2-content {
-  color: white;
+  color: var(--text-color);
 }
 button {
-  background: var(--main-primary);
+  background: var(--primary-color);
   border: none;
-  color: white;
+  color: var(--text-color);
 }
 </style>

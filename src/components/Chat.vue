@@ -38,46 +38,45 @@
           ></path>
         </svg>
       </button>
-      <transition name="slide" duration="200">
-        <ul class="dot-menu" v-show="dotMenuShow">
-          <li>
-            <svg
-              class="icon"
-              style="color: var(--text-color); width: 5vw"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path>
-            </svg>
-            <div style="padding-left: 15px">Hakkında</div>
-          </li>
-          <li @click="logout">
-            <svg
-              class="icon"
-              style="color: var(--text-color); width: 5vw"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              ></path>
-            </svg>
-            <div style="padding-left: 15px">Çıkış Yap</div>
-          </li>
-        </ul>
-      </transition>
+
+      <ul class="dot-menu" v-show="dotMenuShow">
+        <li>
+          <svg
+            class="icon"
+            style="color: var(--text-color); width: 5vw"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div style="padding-left: 15px" @click="about">Hakkında</div>
+        </li>
+        <li @click="logout">
+          <svg
+            class="icon"
+            style="color: var(--text-color); width: 5vw"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            ></path>
+          </svg>
+          <div style="padding-left: 15px">Çıkış Yap</div>
+        </li>
+      </ul>
     </div>
     <div class="header-span">a</div>
     <div id="firebaseui-auth-container" v-if="!currUser.id"></div>
@@ -100,9 +99,9 @@
     </div>
     <div class="footer-span">a</div>
     <div class="footer">
-      <form @submit.prevent="sendMessage">
+      <form @submit.prevent="sendMessage" v-if="!gifPanelShow">
         <!-- v-touch:start="startRecording" v-touch:end="endRecording" -->
-        <button>
+        <button >
           <input
             type="file"
             @change="previewSound"
@@ -136,42 +135,54 @@
         />
         <transition name="bounce" duration="600">
           <div class="icon-group" v-show="inputIconShow && !message">
-            <svg
-              class="icon input-icon"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <svg
-              class="icon input-icon"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                fill-rule="evenodd"
-                d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
-                clip-rule="evenodd"
-              ></path>
-            </svg>
-            <svg
-              class="icon input-icon"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                clip-rule="evenodd"
-                d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-5L9 4H4zm7 5a1 1 0 00-2 0v1H8a1 1 0 000 2h1v1a1 1 0 002 0v-1h1a1 1 0 000-2h-1V9z"
-                fill-rule="evenodd"
-              ></path>
-            </svg>
+            <button @click="sendLocation">
+              <svg
+                class="icon input-icon"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+            <button @click="gifPanelShow = true">
+              <svg
+                class="icon input-icon"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+            <button>
+              <input
+                type="file"
+                @change="previewPhoto"
+                id="photo"
+                accept="image/*"
+              />
+              <svg
+                class="icon input-icon"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V8a2 2 0 00-2-2h-5L9 4H4zm7 5a1 1 0 00-2 0v1H8a1 1 0 000 2h1v1a1 1 0 002 0v-1h1a1 1 0 000-2h-1V9z"
+                  fill-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
           </div>
         </transition>
         <button>
@@ -191,6 +202,48 @@
           </svg>
         </button>
       </form>
+      <transition name="slide-gif" duration="200">
+        <div class="gifPanel" v-if="gifPanelShow">
+          <div class="gifPanelHeader">
+            <button @click="gifPanelShow = false">
+              <svg
+                class="icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                ></path>
+              </svg></button
+            >GIFHY
+          </div>
+          <div class="gifPanelContent">
+            <div class="row">
+              <div class="column">
+                <img src="https://via.placeholder.com/200x300" />
+                <img src="https://via.placeholder.com/100x150" />
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/150" />
+              </div>
+              <div class="column">
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/150" />
+                <img src="https://via.placeholder.com/200x300" />
+                <img src="https://via.placeholder.com/100x150" />
+                <img src="https://via.placeholder.com/150" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </transition>
     </div>
     <div class="update-dialog" v-if="prompt">
       <div class="update-dialog__content">
@@ -231,7 +284,10 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db.collection("messages").orderBy("createdAt", "desc").limit(25),
+    messages: db
+      .collection("messages")
+      .orderBy("createdAt", "desc")
+      .limit(25),
   },
   components: {
     Message,
@@ -244,17 +300,18 @@ export default {
     }
   },
 
-  data: function () {
+  data: function() {
     return {
       message: "",
       messages: [],
-      currUser: {},
+      currUser: { id: 1 },
       prompt: false,
       inputIconShow: true,
       dotMenuShow: false,
+      gifPanelShow: false,
     };
   },
-  mounted: function () {
+  mounted: function() {
     var user = Firebase.auth().currentUser;
     if (user) {
       console.log(user);
@@ -283,6 +340,33 @@ export default {
     }
   },
   methods: {
+    sendLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position=> {
+          let latlon = position.coords.latitude + "," + position.coords.longitude;
+          let mapUrl = `https://www.google.com/maps?q=${latlon}`;
+          
+          Swal.fire({
+            html:'<a href="'+mapUrl+'">Konuma git</a>',
+          });
+        });
+      } else {
+        Swal.fire("Hata","Konum desteklenmiyor","error")
+      }
+    },
+    about() {
+      Swal.fire({
+        title: "Hakkında",
+        html: 'Sevgi ile yapıldı <br><span class="pulse" >❤️</span>',
+
+        heightAuto: false,
+
+        showConfirmButton: false,
+      });
+    },
+    previewPhoto() {
+      console.log("a");
+    },
     previewSound() {
       let inputElement = document.getElementById("sound");
       console.dir(inputElement.files[0]);
@@ -340,7 +424,7 @@ export default {
             .get()
             .then((querySnapshot) => {
               let exist = false;
-              querySnapshot.forEach(function (doc) {
+              querySnapshot.forEach(function(doc) {
                 if (token === doc.data().token) exist = true;
               });
               if (!exist)
@@ -410,6 +494,7 @@ export default {
   transform: translateY(-70%);
   opacity: 0;
 }
+
 .dot-menu {
   padding: 10px;
   margin: 5px;
@@ -472,7 +557,7 @@ audio::-webkit-media-controls-volume-slider-container {
 .icon {
   width: 8vw;
   height: 8vw;
-  color: white;
+  color: var(--text-color);
 }
 .icon-group {
   position: absolute;
@@ -481,7 +566,7 @@ audio::-webkit-media-controls-volume-slider-container {
 .input-icon {
   width: 7vw;
   height: 7vw;
-  color: #909090;
+  color: var(--input-icon-color);
 }
 .container {
   display: flex;
@@ -500,7 +585,7 @@ audio::-webkit-media-controls-volume-slider-container {
   display: flex;
   flex-direction: row;
   align-items: center;
-  color: white;
+  color: var(--text-color);
 }
 .header-span {
   padding: 20px;
@@ -520,18 +605,19 @@ audio::-webkit-media-controls-volume-slider-container {
   background-position: center;
   background-size: cover;
   flex: 10;
-  color: white;
+  color: var(--text-color);
   overflow-x: hidden;
   overflow-y: auto;
   padding-bottom: 35px;
+  width: 100%;
 }
 .footer {
   position: fixed;
   padding: 10px 5px 10px 5px;
   bottom: 0;
-  background: black;
+  background: var(--secondary-color);
   width: 100vw;
-  color: white;
+  color: var(--text-color);
 }
 .footer-span {
   padding: 15px;
@@ -541,11 +627,48 @@ audio::-webkit-media-controls-volume-slider-container {
   display: flex;
   align-content: flex-end;
 }
+.gifPanel {
+  background: black;
+  max-height: 300px;
+}
+.gifPanel .icon {
+  padding: 5px;
+}
+.gifPanelHeader {
+  align-items: center;
+  display: flex;
+  width: 100%;
+  padding: 5px;
+  font-weight: bold;
+  background: var(--secondary-color);
+}
+.gifPanelContent {
+  overflow: scroll;
+  max-height: 300px;
+}
+.gifPanelContent .row {
+  display: -ms-flexbox; /* IE 10 */
+  display: flex;
+  -ms-flex-wrap: wrap; /* IE 10 */
+  flex-wrap: wrap;
+  padding: 0 4px;
+}
+.column {
+  -ms-flex: 50%; /* IE 10 */
+  flex: 50%;
+  padding: 0 4px;
+}
+
+.gifPanelContent img {
+  width: 100%;
+  margin-top: 8px;
+  vertical-align: middle;
+}
 #message {
   background: none;
   border: none;
   border-bottom: 1px solid white;
-  color: white;
+  color: var(--text-color);
   font-size: 18px;
   width: 80vw;
   padding: 2px;
@@ -554,12 +677,11 @@ audio::-webkit-media-controls-volume-slider-container {
 }
 #message:focus {
   outline-width: 0;
-  border-color: var(--main-primary);
+  border-color: var(--primary-color);
 }
 button {
   background: none;
   border: none;
-
   text-align: center;
   transition: background, color 0.2s ease;
 }
@@ -568,16 +690,16 @@ button:focus {
 }
 
 button:active {
-  background: var(--main-primary);
+  background: var(--primary-color);
   opacity: 0.8;
-  color: var(--main-primary) !important;
+  color: var(--primary-color) !important;
 }
 #firebaseui-auth-container {
   position: fixed;
   width: 100vw;
   height: 100vh;
   padding-top: 5vh;
-  background: rgba(0, 0, 0, 0.94);
+  background: var(--secondary-color);
   z-index: 9999999;
   left: 0;
   transition: all 0.2s ease;
@@ -599,14 +721,21 @@ button:active {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
   padding: 12px;
   max-width: 576px;
-  color: white;
-  background-color: #2c3e50;
+  color: var(--text-color);
+  background-color: var(--secondary-color);
   text-align: left;
 }
 .not-writing {
   display: none;
 }
 #sound {
+  opacity: 0;
+  position: absolute;
+  height: 100px;
+  top: 5px;
+  width: 8vw;
+}
+#photo {
   opacity: 0;
   position: absolute;
   height: 100px;

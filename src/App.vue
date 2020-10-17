@@ -15,6 +15,22 @@ export default {
 </script>
 
 <style>
+.pulse{
+ animation: pulseAnim 400ms infinite;
+ animation-direction: alternate;
+ animation-timing-function: ease;
+ 
+}
+@keyframes pulseAnim {
+  from{
+    opacity: 0;
+    font-size: 28vw;
+  }
+  to{
+    font-size: 32vw;
+    opacity: 1;
+  }
+}
 * {
   margin: 0;
   box-sizing: border-box;
@@ -36,10 +52,11 @@ html {
   -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
 }
 :root {
-  --main-primary: #a52422;
-  --text-color: white;
+  --primary-color: #a52422;
   --secondary-color: #181717;
+  --text-color: white;
   --hover-color: #242424;
+  --input-icon-color:#909090;
 }
 
 ::-webkit-scrollbar {
