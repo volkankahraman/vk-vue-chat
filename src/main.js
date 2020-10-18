@@ -6,7 +6,9 @@ import Vue2TouchEvents from 'vue2-touch-events';
 
 Vue.use(Vue2TouchEvents);
 import { firestorePlugin } from 'vuefire';
-import './registerServiceWorker';
+import worker from './registerServiceWorker';
+
+Vue.prototype.$workbox = worker;
 
 Vue.use(firestorePlugin);
 

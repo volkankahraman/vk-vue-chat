@@ -5,20 +5,7 @@
     <div class="backDrop" v-if="dotMenuShow" @click="dotMenuShow = false"></div>
     <div class="header">
       <div class="logo">
-        <svg
-          class="icon"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-          />
-        </svg>
+        <img src="~@/assets/logo.png" width="30" />
         <Span> Chat</Span>
       </div>
 
@@ -95,7 +82,13 @@
           :key="message.id"
         />
       </transition-group>
-      <div :class="{ 'not-writing': true }">Karşı taraf yazıyor...</div>
+      <div
+        :class="{ 'not-writing': !writing.status }"
+        v-for="writing in writings"
+        :key="writing.user"
+      >
+        {{ writing.user }} yazıyor...
+      </div>
     </div>
     <div class="footer-span">a</div>
     <div class="footer">
@@ -104,7 +97,7 @@
         <button>
           <input
             type="file"
-            @change="previewSound"
+            @input="previewSound"
             id="sound"
             accept="audio/*"
             capture
@@ -150,7 +143,7 @@
                 ></path>
               </svg>
             </button>
-            <button @click="showGifPanel">
+            <button @click="showGifPanel('GIFHY')">
               <svg
                 class="icon input-icon"
                 fill="currentColor"
@@ -221,7 +214,8 @@
                 d="M10 19l-7-7m0 0l7-7m-7 7h18"
               ></path>
             </svg></button
-          >GIFHY
+          ><button @click="showGifPanel('GIFHY')">GIFHY</button>
+          <button @click="showGifPanel('stickers')">STICKER</button>
         </div>
         <div class="gifPanelContent">
           <div class="row">
@@ -279,7 +273,10 @@ import "firebase/auth";
 import "firebase/messaging";
 import "firebase/storage";
 require("vue2-animate/dist/vue2-animate.min.css");
-const giphy = require("giphy-api")("c4f1tw7I7D3glsL99Ud2jYjFIeQxCLif");
+const giphy = require("giphy-api")({
+  apiKey: "c4f1tw7I7D3glsL99Ud2jYjFIeQxCLif",
+  https: true,
+});
 
 // import
 import * as firebaseui from "firebaseui";
@@ -298,36 +295,73 @@ export default {
         this.showUpdateUI = true;
       });
     }
+    window.addEventListener("beforeunload", (event) => {
+      if (this.message.length > 3) {
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    });
+    db.collection("users").onSnapshot((snapshot) => {
+      this.writings = [];
+      snapshot.forEach((doc) => {
+        if (doc.id !== this.userDocID) {
+          this.writings.push({
+            user: doc.data().displayName,
+            status: doc.data().writing,
+          });
+        }
+        db.collection("messages")
+          .doc(doc.data().lastSeenMessage)
+          .update({ seen: true });
+      });
+    });
   },
 
   data: function () {
     return {
       message: "",
       messages: [],
-      currUser: { id: 1 },
+      currUser: {},
+      userDocID: 0,
       prompt: false,
       inputIconShow: true,
       dotMenuShow: false,
       gifPanelShow: false,
+      writings: [],
       gifs: {
         left: [],
         right: [],
       },
+      triggered: false,
     };
+  },
+  watch: {
+    message: function (value) {
+      if (value !== "" && value.length > 3) {
+        if (!this.triggered) {
+          db.collection("users").doc(this.userDocID).update({ writing: true });
+          this.triggered = true;
+        }
+      } else {
+        if (value.length < 1) {
+          db.collection("users").doc(this.userDocID).update({ writing: false });
+          console.log("sunucuya yaz");
+          this.triggered = false;
+        }
+      }
+    },
   },
   mounted: function () {
     var user = Firebase.auth().currentUser;
+
     if (user) {
-      // console.log(user);
-      this.currUser.id = user.uid;
       this.getToken();
+      this.getUser(user);
     } else {
       Firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          // console.log(user);
-
-          this.currUser.id = user.uid;
           this.getToken();
+          this.getUser(user);
         } else {
           var ui = new firebaseui.auth.AuthUI(Firebase.auth());
           Firebase.auth().languageCode = "tr"; // set with string
@@ -356,14 +390,26 @@ export default {
       };
       db.collection("messages").add(messageSnap);
     },
-    showGifPanel() {
+    showGifPanel(gifVersion) {
       this.gifPanelShow = true;
-      giphy
-        .search({
-          q: "hi",
-          limit: 25,
-        })
-        .then((res) => {
+      this.gifs = {
+        left: [],
+        right: [],
+      };
+      if (gifVersion === "stickers")
+        giphy
+          .search({
+            api: "stickers",
+            q: "funny",
+          })
+          .then((res) => {
+            res.data.forEach((gif, i) => {
+              if (i % 2 == 1) this.gifs.left.push(gif.images.downsized.url);
+              else this.gifs.right.push(gif.images.downsized.url);
+            });
+          });
+      else
+        giphy.search("love").then((res) => {
           res.data.forEach((gif, i) => {
             if (i % 2 == 1) this.gifs.left.push(gif.images.downsized.url);
             else this.gifs.right.push(gif.images.downsized.url);
@@ -463,25 +509,41 @@ export default {
             });
           });
         });
-
-      // ref.on("state_changed", (snapshot) => {
-      //   snapshot.ref.getDownloadURL().then((url) => {
-      //     console.log(url);
-      //     soundElement.src = url;
-      //     Swal.fire({
-      //       text: "gayıtlandı !" + url,
-      //       timer: 300,
-      //     });
-      //   });
-      // });
     },
-    startRecording() {
-      console.log("a");
+    getUser(user) {
+      this.currUser.id = user.uid;
+      this.currUser.name = user.displayName;
+      this.currUser.email = user.email;
+      db.collection("users")
+        .get()
+        .then((querySnapshot) => {
+          let exist = false;
+          querySnapshot.forEach((doc) => {
+            if (this.currUser.id === doc.data().userID) {
+              this.userDocID = doc.id;
+              db.collection("users")
+                .doc(doc.id)
+                .update({ lastSeenMessage: this.messages[0].id });
+              exist = true;
+            }
+          });
+          if (!exist)
+            db.collection("users")
+              .add({
+                userID: this.currUser.id,
+                displayName: this.currUser.name,
+                mail: this.currUser.email,
+              })
+              .then((user) => {
+                db.collection("users")
+                  .doc(user.id)
+                  .update({ lastSeenMessage: this.messages[0].id });
+                this.userDocID = user.id;
+              });
+          console.log("last message", this.messages[0].id);
 
-      // const player = document.getElementById("player");
-    },
-    endRecording() {
-      console.log("b");
+          console.log("user", exist);
+        });
     },
     getToken() {
       Firebase.messaging()
@@ -500,7 +562,7 @@ export default {
                   token: token,
                   userID: this.currUser.id,
                 });
-              console.log(exist);
+              console.log("token", exist);
             });
         })
         .catch((err) => console.log("error", err));
@@ -697,7 +759,7 @@ audio::-webkit-media-controls-volume-slider-container {
 }
 .gifPanel {
   background: black;
-  max-height: 60vh;
+  height: 60vh;
 }
 .gifPanel .icon {
   padding: 5px;
@@ -712,7 +774,7 @@ audio::-webkit-media-controls-volume-slider-container {
 }
 .gifPanelContent {
   overflow: scroll;
-  max-height: 60vh;
+  height: 60vh;
 }
 .gifPanelContent .row {
   display: -ms-flexbox; /* IE 10 */
@@ -781,6 +843,7 @@ button:active {
   display: flex;
   align-items: center;
 }
+
 .update-dialog {
   position: fixed;
   left: 50%;

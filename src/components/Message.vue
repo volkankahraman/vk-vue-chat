@@ -9,8 +9,28 @@
       {{ message.content }}
     </div>
     <div class="sound-bouble" :class="{ user: owner }" v-if="message.soundUrl">
-      <audio id="player" controls :src="message.soundUrl"></audio>
-      <button @click="onMessageTap" class="deleteSound">X</button>
+      <audio
+        id="player"
+        controls
+        :src="message.soundUrl"
+        :class="{ 'sound-owner': owner }"
+      ></audio>
+      <button @click="onMessageTap" class="deleteSound" v-if="owner">
+        <svg
+          class="icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          ></path>
+        </svg>
+      </button>
     </div>
     <div class="image-bouble" :class="{ user: owner }" v-if="message.imageUrl">
       <img :src="message.imageUrl" />
@@ -109,6 +129,10 @@ export default {
 </script>
 
 <style>
+.icon {
+  width: 4vw;
+  height: 4vw;
+}
 .deleteSound {
   font-weight: bold;
   height: 45px;
@@ -131,7 +155,7 @@ export default {
   display: flex;
   align-items: center;
 }
-.sound-bouble audio {
+.sound-owner {
   background: var(--primary-color);
   border-radius: 23px 0 0 23px;
 }
@@ -207,6 +231,10 @@ button {
   color: var(--text-color);
 }
 @media (min-width: 600px) {
+  .icon {
+    width: 1vw;
+    height: 1vw;
+  }
   .image-bouble img {
     width: 20vw;
   }
