@@ -101,7 +101,7 @@
     <div class="footer">
       <form @submit.prevent="sendMessage" v-if="!gifPanelShow">
         <!-- v-touch:start="startRecording" v-touch:end="endRecording" -->
-        <button >
+        <button>
           <input
             type="file"
             @change="previewSound"
@@ -124,6 +124,7 @@
           </svg>
         </button>
         <textarea
+          @enter="alert()"
           id="message"
           v-model="message"
           @focus="inputIconShow = false"
@@ -149,7 +150,7 @@
                 ></path>
               </svg>
             </button>
-            <button @click="gifPanelShow = true">
+            <button @click="showGifPanel">
               <svg
                 class="icon input-icon"
                 fill="currentColor"
@@ -202,48 +203,49 @@
           </svg>
         </button>
       </form>
-      <transition name="slide-gif" duration="200">
-        <div class="gifPanel" v-if="gifPanelShow">
-          <div class="gifPanelHeader">
-            <button @click="gifPanelShow = false">
-              <svg
-                class="icon"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                ></path>
-              </svg></button
-            >GIFHY
-          </div>
-          <div class="gifPanelContent">
-            <div class="row">
-              <div class="column">
-                <img src="https://via.placeholder.com/200x300" />
-                <img src="https://via.placeholder.com/100x150" />
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/150" />
-              </div>
-              <div class="column">
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/150" />
-                <img src="https://via.placeholder.com/200x300" />
-                <img src="https://via.placeholder.com/100x150" />
-                <img src="https://via.placeholder.com/150" />
-              </div>
+
+      <div class="gifPanel" v-if="gifPanelShow">
+        <div class="gifPanelHeader">
+          <button @click="gifPanelShow = false">
+            <svg
+              class="icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              ></path>
+            </svg></button
+          >GIFHY
+        </div>
+        <div class="gifPanelContent">
+          <div class="row">
+            <div class="column">
+              <img
+                @click="sendGif(gif)"
+                v-for="gif in gifs.left"
+                :key="gif"
+                :src="gif"
+                loading="lazy"
+              />
+            </div>
+            <div class="column">
+              <img
+                @click="sendGif(gif)"
+                v-for="gif in gifs.right"
+                :key="gif"
+                :src="gif"
+                loading="lazy"
+              />
             </div>
           </div>
         </div>
-      </transition>
+      </div>
     </div>
     <div class="update-dialog" v-if="prompt">
       <div class="update-dialog__content">
@@ -277,6 +279,7 @@ import "firebase/auth";
 import "firebase/messaging";
 import "firebase/storage";
 require("vue2-animate/dist/vue2-animate.min.css");
+const giphy = require("giphy-api")("c4f1tw7I7D3glsL99Ud2jYjFIeQxCLif");
 
 // import
 import * as firebaseui from "firebaseui";
@@ -284,10 +287,7 @@ import * as firebaseui from "firebaseui";
 export default {
   name: "Chat",
   firestore: {
-    messages: db
-      .collection("messages")
-      .orderBy("createdAt", "desc")
-      .limit(25),
+    messages: db.collection("messages").orderBy("createdAt", "desc").limit(25),
   },
   components: {
     Message,
@@ -300,7 +300,7 @@ export default {
     }
   },
 
-  data: function() {
+  data: function () {
     return {
       message: "",
       messages: [],
@@ -309,18 +309,22 @@ export default {
       inputIconShow: true,
       dotMenuShow: false,
       gifPanelShow: false,
+      gifs: {
+        left: [],
+        right: [],
+      },
     };
   },
-  mounted: function() {
+  mounted: function () {
     var user = Firebase.auth().currentUser;
     if (user) {
-      console.log(user);
+      // console.log(user);
       this.currUser.id = user.uid;
       this.getToken();
     } else {
       Firebase.auth().onAuthStateChanged((user) => {
         if (user) {
-          console.log(user);
+          // console.log(user);
 
           this.currUser.id = user.uid;
           this.getToken();
@@ -340,18 +344,56 @@ export default {
     }
   },
   methods: {
+    sendGif(gif) {
+      this.gifPanelShow = false;
+      let messageSnap = {
+        seen: false,
+        emoji: this.containsOnlyEmojis(this.message),
+        user: this.currUser.id,
+        content: "Gif gönderdi!",
+        imageUrl: gif,
+        createdAt: Date.now(),
+      };
+      db.collection("messages").add(messageSnap);
+    },
+    showGifPanel() {
+      this.gifPanelShow = true;
+      giphy
+        .search({
+          q: "hi",
+          limit: 25,
+        })
+        .then((res) => {
+          res.data.forEach((gif, i) => {
+            if (i % 2 == 1) this.gifs.left.push(gif.images.downsized.url);
+            else this.gifs.right.push(gif.images.downsized.url);
+          });
+        });
+    },
     sendLocation() {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position=> {
-          let latlon = position.coords.latitude + "," + position.coords.longitude;
-          let mapUrl = `https://www.google.com/maps?q=${latlon}`;
-          
+        navigator.geolocation.getCurrentPosition((position) => {
+          let messageSnap = {
+            seen: false,
+            emoji: this.containsOnlyEmojis(this.message),
+            user: this.currUser.id,
+            content: "Konum gönderdi!",
+            location: {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+            },
+            createdAt: Date.now(),
+          };
+          db.collection("messages").add(messageSnap);
           Swal.fire({
-            html:'<a href="'+mapUrl+'">Konuma git</a>',
+            text: "gonum gitti !",
+            timer: 900,
+            icon: "success",
+            showConfirmButton: false,
           });
         });
       } else {
-        Swal.fire("Hata","Konum desteklenmiyor","error")
+        Swal.fire("Hata", "Konum desteklenmiyor", "error");
       }
     },
     about() {
@@ -365,15 +407,41 @@ export default {
       });
     },
     previewPhoto() {
-      console.log("a");
+      let inputElement = document.getElementById("photo");
+      console.dir(inputElement.files[0]);
+
+      let folderName = "/images/";
+
+      Firebase.storage()
+        .ref(folderName + inputElement.files[0].name)
+        .put(inputElement.files[0])
+        .then((snapshot) => {
+          snapshot.ref.getDownloadURL().then((url) => {
+            let messageSnap = {
+              seen: false,
+              emoji: this.containsOnlyEmojis(this.message),
+              user: this.currUser.id,
+              content: "Fotoğraf gönderdi!",
+              imageUrl: url,
+              createdAt: Date.now(),
+            };
+            db.collection("messages").add(messageSnap);
+            Swal.fire({
+              text: "gayıtlandı !",
+              timer: 900,
+              icon: "success",
+              showConfirmButton: false,
+            });
+          });
+        });
     },
     previewSound() {
       let inputElement = document.getElementById("sound");
       console.dir(inputElement.files[0]);
 
-      // soundElement.src = window.URL.createObjectURL(inputElement.files[0]);
+      let folderName = "/sounds/";
       Firebase.storage()
-        .ref(inputElement.files[0].name)
+        .ref(folderName + inputElement.files[0].name)
         .put(inputElement.files[0])
         .then((snapshot) => {
           snapshot.ref.getDownloadURL().then((url) => {
@@ -424,7 +492,7 @@ export default {
             .get()
             .then((querySnapshot) => {
               let exist = false;
-              querySnapshot.forEach(function(doc) {
+              querySnapshot.forEach(function (doc) {
                 if (token === doc.data().token) exist = true;
               });
               if (!exist)
@@ -499,7 +567,7 @@ export default {
   padding: 10px;
   margin: 5px;
   position: absolute;
-  right: 15px;
+  right: 10px;
   top: 0;
   z-index: 2;
   background: var(--secondary-color);
@@ -629,7 +697,7 @@ audio::-webkit-media-controls-volume-slider-container {
 }
 .gifPanel {
   background: black;
-  max-height: 300px;
+  max-height: 60vh;
 }
 .gifPanel .icon {
   padding: 5px;
@@ -644,7 +712,7 @@ audio::-webkit-media-controls-volume-slider-container {
 }
 .gifPanelContent {
   overflow: scroll;
-  max-height: 300px;
+  max-height: 60vh;
 }
 .gifPanelContent .row {
   display: -ms-flexbox; /* IE 10 */
@@ -670,6 +738,7 @@ audio::-webkit-media-controls-volume-slider-container {
   border-bottom: 1px solid white;
   color: var(--text-color);
   font-size: 18px;
+  line-height: 20px;
   width: 80vw;
   padding: 2px;
   flex: 1;

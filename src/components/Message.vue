@@ -1,10 +1,9 @@
 /* eslint-disable */
 <template>
-  <div class="wrapper" v-if="message.content">
+  <div class="wrapper" v-if="message.content" v-touch:touchhold="onMessageTap">
     <div
-      v-if="!message.soundUrl"
+      v-if="!message.soundUrl && !message.imageUrl && !message.location"
       class="bouble disable-selection"
-      v-touch:touchhold="onMessageTap"
       :class="[{ user: owner }, { hasEmoji: message.emoji }]"
     >
       {{ message.content }}
@@ -13,7 +12,39 @@
       <audio id="player" controls :src="message.soundUrl"></audio>
       <button @click="onMessageTap" class="deleteSound">X</button>
     </div>
+    <div class="image-bouble" :class="{ user: owner }" v-if="message.imageUrl">
+      <img :src="message.imageUrl" />
+    </div>
     <span class="seen" :class="{ 'seen-hide': !message.seen }">Görüldü</span>
+    <div
+      class="location-bouble"
+      :class="{ user: owner }"
+      v-if="message.location"
+    >
+      <a :href="locationUrl" target="_blank">
+        <svg
+          class="icon"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+          ></path>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+          ></path>
+        </svg>
+        Konum</a
+      >
+    </div>
   </div>
 </template>
 
@@ -57,7 +88,10 @@ export default {
     //   event.stopPropagation();
     //   return false;
     // };
-
+    if (this.message.location)
+      this.locationUrl = `https://www.google.com/maps?q=${
+        this.message.location.latitude + "," + this.message.location.longitude
+      }`;
     Firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         if (user.uid === this.message.user) {
@@ -69,14 +103,16 @@ export default {
     });
   },
   data: () => {
-    return { owner: false };
+    return { owner: false, locationUrl: "" };
   },
 };
 </script>
 
 <style>
-.deleteSound{
-  border-radius: 50%;
+.deleteSound {
+  font-weight: bold;
+  height: 45px;
+  padding: 12px;
 }
 .bouble {
   color: var(--text-color);
@@ -92,6 +128,41 @@ export default {
 .sound-bouble {
   background: none !important;
   align-self: flex-start;
+  display: flex;
+  align-items: center;
+}
+.sound-bouble audio {
+  background: var(--primary-color);
+  border-radius: 23px 0 0 23px;
+}
+.image-bouble {
+  background: none !important;
+  align-self: flex-start;
+}
+
+.location-bouble {
+  align-self: flex-start;
+  padding: 10px 20px 10px 0;
+  margin: 5px;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.15);
+}
+.location-bouble .icon {
+  width: 7vw;
+  height: 6vw;
+  margin: 0 10px;
+}
+
+.location-bouble a {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  text-decoration: none; /* no underline */
+}
+
+.image-bouble img {
+  width: 50vw;
 }
 .sound-bouble audio {
   height: 45px;
@@ -134,5 +205,10 @@ button {
   background: var(--primary-color);
   border: none;
   color: var(--text-color);
+}
+@media (min-width: 600px) {
+  .image-bouble img {
+    width: 20vw;
+  }
 }
 </style>

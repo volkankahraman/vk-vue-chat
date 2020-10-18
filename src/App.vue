@@ -15,20 +15,31 @@ export default {
 </script>
 
 <style>
-.pulse{
- animation: pulseAnim 400ms infinite;
- animation-direction: alternate;
- animation-timing-function: ease;
- 
+.pulse {
+  animation: pulseAnim 400ms infinite;
+  animation-direction: alternate;
+  animation-timing-function: ease;
 }
 @keyframes pulseAnim {
-  from{
+  from {
     opacity: 0;
     font-size: 28vw;
   }
-  to{
+  to {
     font-size: 32vw;
     opacity: 1;
+  }
+}
+@media (min-width: 600px) {
+  @keyframes pulseAnim {
+    from {
+      opacity: 0;
+      font-size: 14vw;
+    }
+    to {
+      font-size: 16vw;
+      opacity: 1;
+    }
   }
 }
 * {
@@ -56,7 +67,7 @@ html {
   --secondary-color: #181717;
   --text-color: white;
   --hover-color: #242424;
-  --input-icon-color:#909090;
+  --input-icon-color: #909090;
 }
 
 ::-webkit-scrollbar {
@@ -68,7 +79,7 @@ html {
   height: 0px;
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--main-primary);
+  background: var(--primary-color);
   border: 22px none #ffffff;
   border-radius: 50px;
 }
