@@ -28,14 +28,14 @@
       >
         STICKER
       </button>
-      <form @submit.prevent="searchGif">
-      <input
-        type="text"
-        v-model.lazy="search"
-        placeholder="Ara..."
-        autocomplete="off"
-        id="search"
-      />
+      <form @submit.prevent="searchGif" style="flex: 1">
+        <input
+          type="text"
+          v-model.lazy="search"
+          placeholder="Ara..."
+          autocomplete="off"
+          id="search"
+        />
       </form>
       <button @click="searchGif">
         <svg
@@ -95,7 +95,7 @@ export default {
       required: true,
     },
   },
-  data: function() {
+  data: function () {
     return {
       gifVersion: "GIPHYy",
       gifs: {
@@ -106,7 +106,7 @@ export default {
       search: "",
     };
   },
-  created: function() {
+  created: function () {
     this.gifVersion = "GIPHY";
   },
   methods: {
@@ -165,12 +165,12 @@ export default {
     },
   },
   watch: {
-    search: function(search) {
+    search: function (search) {
       if (search.length >= 3) {
         this.searchGif();
       }
     },
-    gifVersion: function(version) {
+    gifVersion: function (version) {
       this.gifs = {
         left: [],
         right: [],
@@ -213,8 +213,7 @@ export default {
   padding: 10px;
   color: var(--text-color);
   flex: 1 0 auto;
-  margin: 0 10px;
-  min-width: 0px;
+  width: 100%;
 }
 .loader-container {
   width: 100%;

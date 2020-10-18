@@ -27,13 +27,21 @@ export default {
 
 /* Safari */
 @-webkit-keyframes spin {
-  0% { -webkit-transform: rotate(0deg); }
-  100% { -webkit-transform: rotate(360deg); }
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 .pulse {
   animation: pulseAnim 400ms infinite;
@@ -110,7 +118,7 @@ html {
   background: #000000;
 }
 ::-webkit-scrollbar-track {
-  background: #000000;
+  background: none;
   border: 0px none #ffffff;
   border-radius: 43px;
 }

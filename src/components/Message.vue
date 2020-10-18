@@ -1,6 +1,11 @@
 /* eslint-disable */
 <template>
-  <div class="wrapper" v-if="message.content" v-touch:touchhold="onMessageTap" @dblclick="likeMessage">
+  <div
+    class="wrapper"
+    v-if="message.content"
+    v-touch:touchhold="onMessageTap"
+    @dblclick="likeMessage"
+  >
     <div
       v-if="!message.soundUrl && !message.imageUrl && !message.location"
       class="bouble disable-selection"
@@ -67,9 +72,17 @@
       >
     </div>
     <transition name="bounce" duration="400">
-    <span class="heart" v-show="liked || message.liked" :class="{'not-owner':!owner}" @click="unLikeMessage">❤️</span>
+      <span
+        class="heart"
+        v-show="liked || message.liked"
+        :class="{ 'not-owner': !owner }"
+        @click="unLikeMessage"
+        >❤️</span
+      >
     </transition>
-    <span class="seen" v-if="message.seen && owner && message.last">Görüldü</span>
+    <span class="seen" v-if="message.seen && owner && message.last"
+      >Görüldü</span
+    >
   </div>
 </template>
 
@@ -88,15 +101,13 @@ export default {
     },
   },
   methods: {
-    likeMessage(){
+    likeMessage() {
       this.liked = true;
-      db.collection("messages").doc(this.message.id).update({liked:true});
-      
+      db.collection("messages").doc(this.message.id).update({ liked: true });
     },
-    unLikeMessage(){
+    unLikeMessage() {
       this.liked = false;
-      db.collection("messages").doc(this.message.id).update({liked:false});
-
+      db.collection("messages").doc(this.message.id).update({ liked: false });
     },
     onMessageTap() {
       if (this.owner)
@@ -118,11 +129,6 @@ export default {
     },
   },
   created: function () {
-    // window.oncontextmenu = function (event) {
-    //   event.preventDefault();
-    //   event.stopPropagation();
-    //   return false;
-    // };
     if (this.message.location)
       this.locationUrl = `https://www.google.com/maps?q=${
         this.message.location.latitude + "," + this.message.location.longitude
@@ -132,17 +138,16 @@ export default {
         if (user.uid === this.message.user) {
           this.owner = true;
         }
-      } 
+      }
     });
   },
   data: () => {
-    return { owner: false, locationUrl: "",liked:false };
+    return { owner: false, locationUrl: "", liked: false };
   },
 };
 </script>
 
 <style>
-
 .icon {
   width: 4vw;
   height: 4vw;
@@ -234,7 +239,7 @@ export default {
   cursor: pointer;
 }
 
-.not-owner{
+.not-owner {
   align-self: flex-start;
 }
 .seen-hide {

@@ -198,50 +198,7 @@
         </button>
       </form>
       <GifPanel v-if="gifPanelShow" :currUser="currUser" v-on:checkPanel="gifPanelStatus"/>
-      <!-- <div class="gifPanel" v-if="gifPanelShow">
-        <div class="gifPanelHeader">
-          <button @click="gifPanelShow = false">
-            <svg
-              class="icon"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              ></path>
-            </svg></button
-          ><button @click="showGifPanel('GIFHY')">GIFHY</button>
-          <button @click="showGifPanel('stickers')">STICKER</button>
-        </div>
-        <div class="gifPanelContent">
-          <div class="row">
-            <div class="column">
-              <img
-                @click="sendGif(gif)"
-                v-for="gif in gifs.left"
-                :key="gif"
-                :src="gif"
-                loading="lazy"
-              />
-            </div>
-            <div class="column">
-              <img
-                @click="sendGif(gif)"
-                v-for="gif in gifs.right"
-                :key="gif"
-                :src="gif"
-                loading="lazy"
-              />
-            </div>
-          </div>
-        </div>
-      </div> -->
-    </div>
+     </div>
     <div class="update-dialog" v-if="prompt">
       <div class="update-dialog__content">
         A new version is found. Refresh to load it?
@@ -290,6 +247,11 @@ export default {
     GifPanel,
   },
   created() {
+     window.oncontextmenu = function (event) {
+      event.preventDefault();
+      event.stopPropagation();
+      return false;
+    };
     if (this.$workbox) {
       this.$workbox.addEventListener("waiting", () => {
         this.showUpdateUI = true;
