@@ -336,15 +336,13 @@ export default {
   watch: {
     messages: function (value) {
       if (value[0] && this.currUser.id) {
+        value[0].last=true;
         value.forEach((message) => {
           if (message.user !== this.currUser.id && !message.seen) {
-            console.log(message);
+            db.collection('messages').doc(message.id).update({seen:true})
           }
         });
       }
-      // db.collection("users")
-      //           .doc(doc.id)
-      //           .update({ lastSeenMessage: this.messages[0].id });
     },
     message: function (value) {
       if (value !== "" && value.length > 3) {
@@ -395,6 +393,7 @@ export default {
         emoji: this.containsOnlyEmojis(this.message),
         user: this.currUser.id,
         content: "Gif gönderdi!",
+        liked:false,
         imageUrl: gif,
         createdAt: Date.now(),
       };
@@ -478,6 +477,7 @@ export default {
               emoji: this.containsOnlyEmojis(this.message),
               user: this.currUser.id,
               content: "Fotoğraf gönderdi!",
+              liked:false,
               imageUrl: url,
               createdAt: Date.now(),
             };
@@ -506,6 +506,7 @@ export default {
               emoji: this.containsOnlyEmojis(this.message),
               user: this.currUser.id,
               content: "Ses kaydı gönderdi!",
+              liked:false,
               soundUrl: url,
               createdAt: Date.now(),
             };
@@ -569,7 +570,7 @@ export default {
               console.log("token", exist);
             });
         })
-        .catch((err) => console.log("error", err));
+        .catch(() => console.log("error with notification"));
     },
     async accept() {
       this.showUpdateUI = false;
@@ -596,6 +597,7 @@ export default {
         emoji: this.containsOnlyEmojis(this.message),
         user: this.currUser.id,
         content: this.message,
+        liked:false,
         createdAt: Date.now(),
       };
 

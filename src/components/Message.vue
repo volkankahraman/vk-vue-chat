@@ -1,6 +1,6 @@
 /* eslint-disable */
 <template>
-  <div class="wrapper" v-if="message.content" v-touch:touchhold="onMessageTap">
+  <div class="wrapper" v-if="message.content" v-touch:touchhold="onMessageTap" @dblclick="likeMessage">
     <div
       v-if="!message.soundUrl && !message.imageUrl && !message.location"
       class="bouble disable-selection"
@@ -36,7 +36,7 @@
       <img :src="message.imageUrl" />
     </div>
     <!-- :class="{ 'seen-hide': !message.seen || !owner }" -->
-    <span class="seen" v-if="message.seen && owner && index > 23">Görüldü</span>
+
     <div
       class="location-bouble"
       :class="{ user: owner }"
@@ -57,7 +57,7 @@
             d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
           ></path>
           <path
-            stroke-linecap="round"
+            stroke-linecap="fround"
             stroke-linejoin="round"
             stroke-width="2"
             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
@@ -66,6 +66,10 @@
         Konum</a
       >
     </div>
+    <transition name="bounce" duration="400">
+    <span class="heart" v-show="liked || message.liked" :class="{'not-owner':!owner}" @click="unLikeMessage">❤️</span>
+    </transition>
+    <span class="seen" v-if="message.seen && owner && message.last">Görüldü</span>
   </div>
 </template>
 
@@ -82,9 +86,18 @@ export default {
       type: Object,
       required: true,
     },
-    index: { required: true },
   },
   methods: {
+    likeMessage(){
+      this.liked = true;
+      db.collection("messages").doc(this.message.id).update({liked:true});
+      
+    },
+    unLikeMessage(){
+      this.liked = false;
+      db.collection("messages").doc(this.message.id).update({liked:false});
+
+    },
     onMessageTap() {
       if (this.owner)
         Swal.fire({
@@ -119,18 +132,17 @@ export default {
         if (user.uid === this.message.user) {
           this.owner = true;
         }
-      } else {
-        console.log("not user");
-      }
+      } 
     });
   },
   data: () => {
-    return { owner: false, locationUrl: "" };
+    return { owner: false, locationUrl: "",liked:false };
   },
 };
 </script>
 
 <style>
+
 .icon {
   width: 4vw;
   height: 4vw;
@@ -214,6 +226,16 @@ export default {
   display: inline-flex;
   font-size: 12px;
   color: grey;
+}
+.heart {
+  align-self: flex-end;
+  display: inline-flex;
+  margin-top: -15px;
+  cursor: pointer;
+}
+
+.not-owner{
+  align-self: flex-start;
 }
 .seen-hide {
   display: none;
