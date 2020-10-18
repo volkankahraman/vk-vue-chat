@@ -77,15 +77,16 @@
     >
       <transition-group name="list" tag="div">
         <Message
-          v-for="message in messages.slice().reverse()"
+          v-for="(message, index) in messages.slice().reverse()"
           :message="message"
+          :index="index"
           :key="message.id"
         />
       </transition-group>
       <div
         :class="{ 'not-writing': !writing.status }"
-        v-for="writing in writings"
-        :key="writing.user"
+        v-for="(writing, writingIndex) in writings"
+        :key="writingIndex"
       >
         {{ writing.user }} yazıyor...
       </div>
@@ -310,9 +311,6 @@ export default {
             status: doc.data().writing,
           });
         }
-        db.collection("messages")
-          .doc(doc.data().lastSeenMessage)
-          .update({ seen: true });
       });
     });
   },
@@ -336,6 +334,18 @@ export default {
     };
   },
   watch: {
+    messages: function (value) {
+      if (value[0] && this.currUser.id) {
+        value.forEach((message) => {
+          if (message.user !== this.currUser.id && !message.seen) {
+            console.log(message);
+          }
+        });
+      }
+      // db.collection("users")
+      //           .doc(doc.id)
+      //           .update({ lastSeenMessage: this.messages[0].id });
+    },
     message: function (value) {
       if (value !== "" && value.length > 3) {
         if (!this.triggered) {
@@ -521,9 +531,7 @@ export default {
           querySnapshot.forEach((doc) => {
             if (this.currUser.id === doc.data().userID) {
               this.userDocID = doc.id;
-              db.collection("users")
-                .doc(doc.id)
-                .update({ lastSeenMessage: this.messages[0].id });
+
               exist = true;
             }
           });
@@ -535,12 +543,8 @@ export default {
                 mail: this.currUser.email,
               })
               .then((user) => {
-                db.collection("users")
-                  .doc(user.id)
-                  .update({ lastSeenMessage: this.messages[0].id });
                 this.userDocID = user.id;
               });
-          console.log("last message", this.messages[0].id);
 
           console.log("user", exist);
         });

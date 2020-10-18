@@ -35,7 +35,8 @@
     <div class="image-bouble" :class="{ user: owner }" v-if="message.imageUrl">
       <img :src="message.imageUrl" />
     </div>
-    <span class="seen" :class="{ 'seen-hide': !message.seen }">Görüldü</span>
+    <!-- :class="{ 'seen-hide': !message.seen || !owner }" -->
+    <span class="seen" v-if="message.seen && owner && index > 23">Görüldü</span>
     <div
       class="location-bouble"
       :class="{ user: owner }"
@@ -81,6 +82,7 @@ export default {
       type: Object,
       required: true,
     },
+    index: { required: true },
   },
   methods: {
     onMessageTap() {
