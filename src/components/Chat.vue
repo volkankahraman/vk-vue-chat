@@ -144,7 +144,7 @@
                 ></path>
               </svg>
             </button>
-            <button @click="showGifPanel('GIFHY')">
+            <button @click="gifPanelShow = true">
               <svg
                 class="icon input-icon"
                 fill="currentColor"
@@ -197,8 +197,8 @@
           </svg>
         </button>
       </form>
-
-      <div class="gifPanel" v-if="gifPanelShow">
+      <GifPanel v-if="gifPanelShow" :currUser="currUser" v-on:checkPanel="gifPanelStatus"/>
+      <!-- <div class="gifPanel" v-if="gifPanelShow">
         <div class="gifPanelHeader">
           <button @click="gifPanelShow = false">
             <svg
@@ -240,7 +240,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
     <div class="update-dialog" v-if="prompt">
       <div class="update-dialog__content">
@@ -266,6 +266,7 @@
 
 <script>
 import Message from "./Message";
+import GifPanel from "./GifPanel";
 import { db } from "../firebase";
 import Firebase from "firebase/app";
 import Swal from "sweetalert2";
@@ -274,10 +275,7 @@ import "firebase/auth";
 import "firebase/messaging";
 import "firebase/storage";
 require("vue2-animate/dist/vue2-animate.min.css");
-const giphy = require("giphy-api")({
-  apiKey: "c4f1tw7I7D3glsL99Ud2jYjFIeQxCLif",
-  https: true,
-});
+
 
 // import
 import * as firebaseui from "firebaseui";
@@ -289,6 +287,7 @@ export default {
   },
   components: {
     Message,
+    GifPanel,
   },
   created() {
     if (this.$workbox) {
@@ -326,10 +325,6 @@ export default {
       dotMenuShow: false,
       gifPanelShow: false,
       writings: [],
-      gifs: {
-        left: [],
-        right: [],
-      },
       triggered: false,
     };
   },
@@ -386,44 +381,8 @@ export default {
     }
   },
   methods: {
-    sendGif(gif) {
-      this.gifPanelShow = false;
-      let messageSnap = {
-        seen: false,
-        emoji: this.containsOnlyEmojis(this.message),
-        user: this.currUser.id,
-        content: "Gif gönderdi!",
-        liked:false,
-        imageUrl: gif,
-        createdAt: Date.now(),
-      };
-      db.collection("messages").add(messageSnap);
-    },
-    showGifPanel(gifVersion) {
-      this.gifPanelShow = true;
-      this.gifs = {
-        left: [],
-        right: [],
-      };
-      if (gifVersion === "stickers")
-        giphy
-          .search({
-            api: "stickers",
-            q: "funny",
-          })
-          .then((res) => {
-            res.data.forEach((gif, i) => {
-              if (i % 2 == 1) this.gifs.left.push(gif.images.downsized.url);
-              else this.gifs.right.push(gif.images.downsized.url);
-            });
-          });
-      else
-        giphy.search("love").then((res) => {
-          res.data.forEach((gif, i) => {
-            if (i % 2 == 1) this.gifs.left.push(gif.images.downsized.url);
-            else this.gifs.right.push(gif.images.downsized.url);
-          });
-        });
+    gifPanelStatus(value){
+      this.gifPanelShow = value;
     },
     sendLocation() {
       if (navigator.geolocation) {
@@ -763,43 +722,7 @@ audio::-webkit-media-controls-volume-slider-container {
   display: flex;
   align-content: flex-end;
 }
-.gifPanel {
-  background: black;
-  height: 60vh;
-}
-.gifPanel .icon {
-  padding: 5px;
-}
-.gifPanelHeader {
-  align-items: center;
-  display: flex;
-  width: 100%;
-  padding: 5px;
-  font-weight: bold;
-  background: var(--secondary-color);
-}
-.gifPanelContent {
-  overflow: scroll;
-  height: 60vh;
-}
-.gifPanelContent .row {
-  display: -ms-flexbox; /* IE 10 */
-  display: flex;
-  -ms-flex-wrap: wrap; /* IE 10 */
-  flex-wrap: wrap;
-  padding: 0 4px;
-}
-.column {
-  -ms-flex: 50%; /* IE 10 */
-  flex: 50%;
-  padding: 0 4px;
-}
 
-.gifPanelContent img {
-  width: 100%;
-  margin-top: 8px;
-  vertical-align: middle;
-}
 #message {
   background: none;
   border: none;
