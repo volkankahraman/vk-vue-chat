@@ -197,8 +197,12 @@
           </svg>
         </button>
       </form>
-      <GifPanel v-if="gifPanelShow" :currUser="currUser" v-on:checkPanel="gifPanelStatus"/>
-     </div>
+      <GifPanel
+        v-if="gifPanelShow"
+        :currUser="currUser"
+        v-on:checkPanel="gifPanelStatus"
+      />
+    </div>
     <div class="update-dialog" v-if="prompt">
       <div class="update-dialog__content">
         A new version is found. Refresh to load it?
@@ -233,7 +237,6 @@ import "firebase/messaging";
 import "firebase/storage";
 require("vue2-animate/dist/vue2-animate.min.css");
 
-
 // import
 import * as firebaseui from "firebaseui";
 
@@ -247,7 +250,7 @@ export default {
     GifPanel,
   },
   created() {
-     window.oncontextmenu = function (event) {
+    window.oncontextmenu = function (event) {
       event.preventDefault();
       event.stopPropagation();
       return false;
@@ -293,10 +296,10 @@ export default {
   watch: {
     messages: function (value) {
       if (value[0] && this.currUser.id) {
-        value[0].last=true;
+        value[0].last = true;
         value.forEach((message) => {
           if (message.user !== this.currUser.id && !message.seen) {
-            db.collection('messages').doc(message.id).update({seen:true})
+            db.collection("messages").doc(message.id).update({ seen: true });
           }
         });
       }
@@ -343,7 +346,7 @@ export default {
     }
   },
   methods: {
-    gifPanelStatus(value){
+    gifPanelStatus(value) {
       this.gifPanelShow = value;
     },
     sendLocation() {
@@ -398,7 +401,7 @@ export default {
               emoji: this.containsOnlyEmojis(this.message),
               user: this.currUser.id,
               content: "Fotoğraf gönderdi!",
-              liked:false,
+              liked: false,
               imageUrl: url,
               createdAt: Date.now(),
             };
@@ -427,7 +430,7 @@ export default {
               emoji: this.containsOnlyEmojis(this.message),
               user: this.currUser.id,
               content: "Ses kaydı gönderdi!",
-              liked:false,
+              liked: false,
               soundUrl: url,
               createdAt: Date.now(),
             };
@@ -518,7 +521,7 @@ export default {
         emoji: this.containsOnlyEmojis(this.message),
         user: this.currUser.id,
         content: this.message,
-        liked:false,
+        liked: false,
         createdAt: Date.now(),
       };
 

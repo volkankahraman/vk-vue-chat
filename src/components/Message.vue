@@ -48,6 +48,22 @@
       v-if="message.location"
     >
       <a :href="locationUrl" target="_blank">
+        <LMap
+          :zoom="16"
+          :center="[message.location.latitude, message.location.longitude]"
+          @click.prevent="console.log('hey')"
+          attributionControl="false"
+        >
+          <LTileLayer
+            attribution="hey"
+            url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
+          ></LTileLayer>
+          <LMarker
+            :lat-lng="[message.location.latitude, message.location.longitude]"
+          ></LMarker>
+        </LMap>
+      </a>
+      <!-- <a :href="locationUrl" target="_blank">
         <svg
           class="icon"
           fill="none"
@@ -68,8 +84,8 @@
             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
           ></path>
         </svg>
-        Konum</a
-      >
+        Konum
+      </a> -->
     </div>
     <transition name="bounce" duration="400">
       <span
@@ -91,9 +107,24 @@ import Firebase from "firebase/app";
 import "firebase/auth";
 import { db } from "../firebase";
 import Swal from "sweetalert2";
+import { LMap, LTileLayer, LMarker } from "vue2-leaflet";
+import "leaflet/dist/leaflet.css";
+import { Icon } from "leaflet";
+
+delete Icon.Default.prototype._getIconUrl;
+Icon.Default.mergeOptions({
+  iconRetinaUrl: require("leaflet/dist/images/marker-icon-2x.png"),
+  iconUrl: require("leaflet/dist/images/marker-icon.png"),
+  shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
+});
 
 // import "gsap";
 export default {
+  components: {
+    LMap,
+    LTileLayer,
+    LMarker,
+  },
   props: {
     message: {
       type: Object,
@@ -185,7 +216,9 @@ export default {
 
 .location-bouble {
   align-self: flex-start;
-  padding: 10px 20px 10px 0;
+  padding: 8px;
+  width: 60vw;
+  height: 200px;
   margin: 5px;
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.15);
@@ -194,14 +227,6 @@ export default {
   width: 7vw;
   height: 6vw;
   margin: 0 10px;
-}
-
-.location-bouble a {
-  display: flex;
-  align-items: center;
-  font-weight: bold;
-  color: white;
-  text-decoration: none; /* no underline */
 }
 
 .image-bouble img {
